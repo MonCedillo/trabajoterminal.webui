@@ -1,0 +1,23 @@
+// Clase de estilos para el componente de botón de menú desplegable
+.MenuButton {
+  //Adaptacion del tamaño del botón de menú al tamaño de la barra de navegación
+  width: 80px;
+  height: 80px;
+  display: flex;
+  // Estilos adicionales para el botón de menú
+  cursor: pointer;
+  box-sizing: border-box;
+  padding: 8px;
+  flex-direction: column;
+  justify-content: space-around;
+  background-color: #222222;
+}
+
+// Clase de estilos para cada línea dentro del botón de menú que forman al menu hamburguesa
+.line {
+  width: 100%;
+  height: 4px; // Grosor de la línea
+  background-color: #a4a4a4; // Color de la línea
+  border-radius: 2px;
+  align-items: center;
+}
