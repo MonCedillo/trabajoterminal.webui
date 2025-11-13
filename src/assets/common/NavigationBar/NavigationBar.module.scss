@@ -1,0 +1,50 @@
+// Clases de estilo para la barra de navegación de manera general
+.NavigationBar {
+    height: 80px;
+    width: 100vw;
+    background-color: #222222;
+    display: flex;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+
+    display: grid;
+    grid-template-columns: 1fr 80px;
+    gap: 16px;
+}
+
+// Clases de estilo para el contenedor del titulo de la pagina, esto incluye el nombre de la empresa/cliente
+.Title {
+    color: #f0f0f0;
+    padding: 26px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 28px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+// Clases de estilo para el contenedor del boton del menu, es decir el despliegue de este
+.DropdownMenu {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 80px; // Justo debajo de la barra de navegación
+  right: 0; // Pegado a la derecha
+  z-index: 999; // Debajo de la barra principal pero encima del resto
+
+  // Estilos para los enlaces dentro del menú desplegable
+  a {
+    padding: 12px 24px;
+    text-decoration: none;
+    background-color: #303030;
+    color: #f0f0f0;
+    &:hover {
+      background-color: #0A97B0;
+    }
+    }
+}
+
+
