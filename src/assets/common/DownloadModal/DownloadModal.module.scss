@@ -1,0 +1,66 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); // Fondo oscuro semitransparente
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000; // Muy alto para estar encima del Navbar
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.modal {
+  background-color: white;
+  width: 300px;
+  padding: 30px;
+  border-radius: 12px;
+  border: 3px solid #4CAF50; // El marco verde solicitado
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.iconContainer {
+  width: 60px;
+  height: 60px;
+  background-color: #e8f5e9; // Verde muy clarito de fondo
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  svg {
+    width: 35px;
+    height: 35px;
+    fill: #4CAF50; // Icono verde
+  }
+}
+
+.message {
+  font-family: Arial, sans-serif;
+  color: #333;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.closeButton {
+  margin-top: 10px;
+  padding: 8px 24px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  
+  &:hover {
+    background-color: #45a049;
+  }
+}
