@@ -1,0 +1,66 @@
+.card {
+  background-color: #E2852E;
+  border-radius: 12px; // Bordes redondeados con un radio de 12px
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); // Sombra suave
+  width: 100%;  
+  height: 100%; // Para llenar el área grid
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; // Para que el header respete el borde redondeado
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.header {
+  background-color: #F5C857; 
+  padding: 16px 20px;
+
+  h3 {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+.body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px; // Espacio entre cada campo
+  flex: 1; // Ocupa el resto del espacio
+  justify-content: center; // Centra el contenido verticalmente si sobra espacio
+}
+
+.row {
+  display: flex;
+  gap: 16px; // Espacio entre fecha y hora
+  
+  .inputGroup {
+    flex: 1; // Que ocupen el mismo ancho
+  }
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; // Espacio entre label e input
+
+  label {
+    font-size: 14px;
+    color: #333333;
+    font-weight: 500;
+  }
+
+  .input {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: #92487A; // Usamos el color morado de tu barra de navegación
+    }
+  }
+}
