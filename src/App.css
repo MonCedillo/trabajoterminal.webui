@@ -1,8 +1,15 @@
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 80px;
+  margin: 0; 
+  padding: 0;
   text-align: center;
+  width: 100%;
+  min-height: 100vh; /* Asegura que #root tenga al menos el alto de la ventana */
 }
 
-
+.App main {
+  padding-top: 80px; 
+  width: 100vw; 
+  min-height: calc(100vh - 80px); 
+  box-sizing: border-box; 
+}
