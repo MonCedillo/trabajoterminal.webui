@@ -1,0 +1,59 @@
+:root {
+  --segment-width: 6px;                                      // Grosor del segmento
+  --segment-length: 30px;                                    // Largo del segmento
+  --segment-gap: 4px;                                        // Espacio entre segmentos
+  --digit-width: 40px;                                       // Ancho del digito, calculado: length + (width * 2) + (gap * 2)
+  --digit-height: 72px;                                      // Alto del dígito, calculado: (length * 2) + (width * 2) + (gap * 2)
+
+  // Colores del display
+  --segment-color-on: #f00;
+  --segment-color-off: #333;
+  --segment-glow-on: 0 0 10px #f00, 0 0 15px #f00;
+  --segment-bg: #222;                                       // Color de fondo del dígito
+}
+
+.digit {
+  position: relative;
+  width: var(--digit-width);
+  height: var(--digit-height);
+  background-color: var(--segment-bg);
+  padding: 2px;
+  border-radius: 3px;
+  border: 1px solid #444;
+}
+
+.segment {
+  position: absolute;
+  background-color: var(--segment-color-off);
+  transition: background-color 0.1s, box-shadow 0.1s;
+}
+
+.on {
+  background-color: var(--segment-color-on);
+  box-shadow: var(--segment-glow-on);
+  z-index: 1; // Los segmentos encendidos se ven por encima
+}
+
+// --- Posicionamiento de los 7 segmentos ---
+
+// Segmentos Horizontales
+.a, .d, .g {
+  height: var(--segment-width);
+  width: var(--segment-length);
+  left: var(--segment-gap);
+}
+
+// Segmentos Verticales
+.b, .c, .e, .f {
+  width: var(--segment-width);
+  height: var(--segment-length);
+  top: var(--segment-gap);
+}
+
+.a { top: 0; }
+.b { left: calc(var(--segment-length) + var(--segment-gap)); }
+.c { top: calc(var(--segment-length) + var(--segment-gap) * 2); left: calc(var(--segment-length) + var(--segment-gap)); }
+.d { top: calc(var(--segment-length) * 2 + var(--segment-gap) * 2); }
+.e { top: calc(var(--segment-length) + var(--segment-gap) * 2); left: 0; }
+.f { left: 0; }
+.g { top: calc(var(--segment-length) + var(--segment-gap)); }
