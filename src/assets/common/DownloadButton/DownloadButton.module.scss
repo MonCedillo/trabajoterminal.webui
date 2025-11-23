@@ -1,0 +1,25 @@
+.btnDownload {
+  background-color: #8bc34a; 
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: background-color 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%; // Para que llene su contenedor si es necesario
+  justify-content: center;
+
+  &:hover {
+    background-color: #1976D2;
+  }
+
+  &:active {
+    transform: scale(0.98); // Efecto de click
+  }
+}
