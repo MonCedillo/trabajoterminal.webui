@@ -1,0 +1,26 @@
+.panel {
+  // 1. Activa el modelo Flexbox
+  display: flex;
+  
+  // 2. FUERZA la dirección horizontal (fila)
+  flex-direction: row; 
+  
+  // 3. Centra los botones horizontalmente en el panel
+  justify-content: center; 
+  // Opciones alternativas:
+  // justify-content: space-between; // Los separa al máximo pegándolos a los bordes
+  // justify-content: space-around;  // Distribuye el espacio equitativamente alrededor
+  
+  // 4. Centra los botones verticalmente (para que todos queden en la misma línea media)
+  align-items: center;
+  
+  // 5. Espacio constante entre cada botón
+  gap: 24px; // Aumenté un poco el gap para que se vean más limpios
+  
+  // Estilos visuales del contenedor
+  padding: 15px 30px;
+  
+  // (Opcional) Si la pantalla es muy pequeña, esto evita que se bajen a una segunda línea.
+  // Quítalo si prefieres que se apilen en móviles.
+  flex-wrap: nowrap; 
+}
