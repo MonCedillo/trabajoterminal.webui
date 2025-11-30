@@ -1,5 +1,3 @@
-/* src/pages/NewTest/NewTest.module.scss */
-
 .newTestContainer {
   display: grid;
   grid-template-columns: 2fr 1fr; 
@@ -7,7 +5,6 @@
   
   gap: 20px; 
   padding: 20px; 
-  background-color: #eee;
   height: calc(100vh - 80px - 40px);
   box-sizing: border-box;
 
@@ -17,21 +14,19 @@
     "control download"; // Ahora control y download están en la tercera fila
 }
 
-/* Estilos para cada área según tu mock */
-
 .graphicsArea {
   grid-area: graphics; /* Posiciona en el área "graphics" */
-  background-color: #6a0dad; /* Púrpura */
-  padding: 20px;
+  //background-color: #3291B6; 
+  padding: 0%;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
+  //color: white;
 }
 
 .counterArea {
   grid-area: counter; /* Posiciona en el área "counter" */
-  background-color: #00bcd4; /* Azul/Cyan */
+  //background-color: #00bcd4; /* Azul/Cyan */
   padding: 20px;
   display: flex;
   justify-content: center;
@@ -41,7 +36,7 @@
 
 .infoArea {
   grid-area: info; /* Posiciona en el área "info" */
-  background-color: #ffeb3b; /* Amarillo */
+  //background-color: #ffeb3b; /* Amarillo */
   padding: 20px;
   display: flex;
   justify-content: center;
@@ -49,8 +44,8 @@
 }
 
 .controlArea {
-  grid-area: control; /* Posiciona en el área "control" */
-  background-color: #ff69b4; /* Rosa */
+  grid-area: control; 
+  //background-color: #ff69b4; /* Rosa */
   padding: 20px;
   display: flex;
   justify-content: center;
@@ -59,38 +54,12 @@
 }
 
 .downloadButtonArea {
-  grid-area: download; /* Posiciona en el área "download" */
-  background-color: #8bc34a; /* Verde */
+  grid-area: download; 
+  //background-color: #8bc34a; /* Verde */
   padding: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   color: white;
 }
-
-// Para ajustar las filas de control y descarga si necesitas 3 filas explícitas:
-// Si quieres que el area de control y descarga estén en una fila aparte,
-// necesitas definir 3 filas explícitamente y asignarles altura.
-// Por ahora, grid-template-areas intentará colocarlas en las filas existentes
-// o crear nuevas implícitamente si no caben, lo cual funciona bien con 1fr 1fr.
-
-// Si la fila de control debe ser "debajo" de todo:
-/*
-.newTestContainer {
-  // ...
-  grid-template-rows: 1fr 1fr auto; // auto para que el control se ajuste a su contenido
-  grid-template-areas:
-    "graphics counter"
-    "graphics info"
-    "control control"; // Control ocupa las dos columnas en la tercera fila
-}
-.controlArea {
-  grid-area: control;
-  // ...
-}
-.downloadButtonArea {
-  // Si control ocupa toda la fila, el download iría en otra fila o se integraría en control.
-  // Podrías poner el botón de descarga dentro del controlArea y usar flexbox ahí.
-}
-*/
 

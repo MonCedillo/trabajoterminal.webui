@@ -1,6 +1,11 @@
 import React from 'react';
 import styles from './NewTest.module.scss';
+
+import InfoCard from '../../common/InfoCard/main';
 import Counter from '../../common/Counter/main';
+import DownloadButton from '../../common/DownloadButton/DownloadButton';
+import ControlPanel from '../../common/ControlPanel/ControlPanel';
+import Graph from '../../common/Graph/main';
 
 
 interface NewTestProps {
@@ -12,7 +17,7 @@ const NewTest: React.FC<NewTestProps> = ({ currentCount }) => {
   return (
     <div className={styles.newTestContainer}>
       <div className={styles.graphicsArea}>
-        Gráficas de trayectoria de robot/sistema embebido
+        <Graph />
       </div>
 
       <div className={styles.counterArea}>
@@ -21,15 +26,15 @@ const NewTest: React.FC<NewTestProps> = ({ currentCount }) => {
       </div>
 
       <div className={styles.infoArea}>
-        Información de la prueba
+        <InfoCard />
       </div>
 
       <div className={styles.controlArea}>
-        CONTROLADOR EMBEBIDO: BOTONES PAUSA/REINICIO
+        <ControlPanel />
       </div>
 
       <div className={styles.downloadButtonArea}>
-        Botón de descarga de resultados
+        <DownloadButton />
       </div>
     </div>
   );
