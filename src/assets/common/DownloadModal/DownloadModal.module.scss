@@ -14,7 +14,7 @@
 }
 
 .modal {
-  background-color: white;
+  background-color: #222222;
   width: 300px;
   padding: 30px;
   border-radius: 12px;
@@ -30,7 +30,7 @@
 .iconContainer {
   width: 60px;
   height: 60px;
-  background-color: #e8f5e9; // Verde muy clarito de fondo
+  background-color: transparent; // Verde muy clarito de fondo
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -45,7 +45,6 @@
 
 .message {
   font-family: Arial, sans-serif;
-  color: #333;
   font-size: 18px;
   font-weight: bold;
 }
