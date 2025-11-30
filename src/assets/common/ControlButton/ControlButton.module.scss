@@ -1,0 +1,46 @@
+.btnControl {
+  border: none;
+  border-radius: 50%; 
+  width: 60px;       
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  transition: transform 0.1s, box-shadow 0.2s, filter 0.2s;
+  color: white; // Icono blanco por defecto, Tiene buen contraste con la mayoría de los colores de fondo que se usaran
+
+  &:hover {
+    filter: brightness(1.1); // Se ilumina al hacer hover con el mouse
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+  }
+
+  svg {
+    width: 28px;
+    height: 28px;
+    fill: currentColor;
+  }
+}
+
+.stop {
+  background-color: #f44336; // Rojo
+}
+
+.pause {
+  background-color: #2196F3; // Azul
+}
+
+.play {
+  background-color: #4CAF50; // Verde
+}
+
+.reset {
+  background-color: #FFEB3B; // Amarillo
+  color: #333; // Texto oscuro para que contraste con el color amarillo
+} 
