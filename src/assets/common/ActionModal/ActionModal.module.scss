@@ -1,0 +1,96 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal {
+  background-color: #222222;
+  width: 320px;
+  padding: 30px;
+  border-radius: 16px;
+  border: 4px solid #ccc; // Borde base
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.iconContainer {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white; // El ícono será blanco
+
+  svg {
+    width: 40px;
+    height: 40px;
+    fill: currentColor;
+  }
+}
+
+.title {
+  font-family: Arial, sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.message {
+  font-size: 16px;
+}
+
+.closeButton {
+  padding: 10px 30px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+  font-size: 16px;
+  opacity: 0.9;
+  
+  &:hover {
+    opacity: 1;
+  }
+}
+
+// --- Variantes Dinámicas ---
+
+.stop {
+  border-color: #f44336;
+  .iconContainer, .closeButton { background-color: #f44336; }
+}
+
+.pause {
+  border-color: #2196F3;
+  .iconContainer, .closeButton { background-color: #2196F3; }
+}
+
+.play {
+  border-color: #4CAF50;
+  .iconContainer, .closeButton { background-color: #4CAF50; }
+}
+
+.reset {
+  border-color: #FFEB3B;
+  .iconContainer, .closeButton { 
+    background-color: #FFEB3B; 
+    color: #333; // Texto oscuro para el amarillo
+  } 
+  // Icono oscuro para el amarillo
+  .iconContainer { color: #333; }
+}
