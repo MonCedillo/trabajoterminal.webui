@@ -1,0 +1,64 @@
+.menuContainer {
+  width: 100%;
+  height: 100%; 
+  display: flex;
+  flex-direction: column; // Elementos uno debajo del otro
+  justify-content: center; // Centrado vertical
+  align-items: center; // Centrado horizontal
+  padding: 200px;
+  box-sizing: border-box;
+}
+
+.title {
+  font-family: Arial, sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 40px; // Espacio entre título y botones
+  text-align: center;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: row; // Botones lado a lado
+  gap: 40px; // Espacio amplio entre los dos botones
+  flex-wrap: wrap; // Para que se ajusten en pantallas muy pequeñas
+  justify-content: center;
+}
+
+// Estilos base para ambos botones
+.selectionButton {
+  width: 200px;
+  height: 120px;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+  color: #222222;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 6px rgba(2,2,2,0.2);
+  
+  // Centrar el texto dentro del botón
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    transform: translateY(-4px); // Efecto de elevación
+
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// Modificador para el botón Cyan
+.cyan {
+  background-color: #00BCD4; // Color Cyan/Azul claro
+}
+
+// Modificador para el botón Naranja
+.orange {
+  background-color: #FF9800; // Color Naranja
+}

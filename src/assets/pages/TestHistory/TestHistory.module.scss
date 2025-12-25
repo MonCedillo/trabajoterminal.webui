@@ -1,0 +1,95 @@
+.historyContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  box-sizing: border-box;
+  position: relative; // Para posicionar el botón si fuera necesario
+}
+
+.tableWrapper {
+  background-color: #777777; 
+  width: 80%;
+  max-width: 1000px;
+  height: 70%; // Altura considerable
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  padding: 20px;
+  overflow-y: auto; // Scroll si hay muchos datos
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  margin-top: 0;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.historyTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+
+  th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #555;
+    text-align: left;
+  }
+
+  th {
+    background-color: #999;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+  }
+
+  tr:hover {
+    background-color: #888;
+  }
+}
+
+// Estilos para las etiquetas de estatus
+.statusBadge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+
+  &.completada { background-color: #4CAF50; } // Verde
+  &.cancelada { background-color: #f44336; } // Rojo
+  &.fallida { background-color: #FF9800; } // Naranja
+}
+
+.buttonContainer {
+  width: 80%;
+  max-width: 1000px;
+  display: flex;
+  justify-content: flex-end; // Alinea el botón a la derecha
+  margin-top: 20px;
+}
+
+.goBackButton {
+  background-color: #FDD835; // Amarillo del mock
+  color: #000;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: transform 0.1s;
+
+  &:hover {
+    background-color: #FBC02D; // Amarillo un poco más oscuro
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}

@@ -1,38 +1,45 @@
-import React from "react";
-import { useState } from "react";
-import styles from "./NavigationBar.module.scss";
+import React, { useState } from 'react';
+import styles from './NavigationBar.module.scss';
+import MenuButton from '../MenuButton/main';
 
-// Importar componentes que se usarán en la barra de navegación
-import MenuButton from "../MenuButton/main";
+// 1. Añadimos una prop para navegar
+interface NavigationBarProps {
+  onNavigate: (page: string) => void;
+}
 
-// Componente de la barra de navegación como componente funcional
-const NavigationBar: React.FC = () => {
-  // Estado para controlar la visibilidad del menú desplegable abierto/cerrado  
+// 2. Recibimos la prop en el componente
+const NavigationBar: React.FC<NavigationBarProps> = ({ onNavigate }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Función para manejar el clic en el botón del menú
   const handleMenuClick = () => {
-    setIsMenuOpen(!isMenuOpen); // Invierte el estado
+    setIsMenuOpen(!isMenuOpen);
   };
 
-    // Renderizado del componente
-    return (
-    // Estructura de la barra de navegación, se establece como header para que use ese espacio en la página
+  // Función helper para navegar y cerrar el menú
+  const handleLinkClick = (page: string) => {
+    onNavigate(page);
+    setIsMenuOpen(false);
+  };
+
+  return (
     <header className={styles.NavigationBar}>
-      {/* Título de la barra de navegación, incluye el nombre de la empresa/cliente*/}
       <div className={styles.Title}>
         Certificación Laboratorio e Importaciones S.C.
       </div>
 
-      {/* Contenedor del botón del menú */}
       <div className={styles.MenuContainer}>
         <MenuButton onClick={handleMenuClick} />
       </div>
+
       {isMenuOpen && (
         <nav className={styles.DropdownMenu}>
-          {/* No se agregan por ahora enlaces a las paginas de redireccionamiento */}
-          <a href="#">Nueva Prueba</a>
-          <a href="#">Historial</a>
+          {/* 3. Actualizamos los enlaces para usar onNavigate */}
+          
+          {/* 'Inicio' nos lleva al Menú de selección de distancia */}
+          <a href="#" onClick={() => handleLinkClick('menu')}>Inicio</a>
+          
+          {/* 'Historial' nos lleva a la nueva pantalla */}
+          <a href="#" onClick={() => handleLinkClick('history')}>Historial</a>
         </nav>
       )}
     </header>
