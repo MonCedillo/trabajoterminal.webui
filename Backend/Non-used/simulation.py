@@ -3,7 +3,7 @@ import random
 
 # Esta función simula el comportamiento de la Raspberry Pi
 async def run_hardware_simulation(sio):
-    print("🤖 Simulación de Hardware Iniciada...")
+    print("Simulación de Hardware Iniciada...")
     
     while True:
         # 1. Simular lectura de sensores (0 a 90 grados)

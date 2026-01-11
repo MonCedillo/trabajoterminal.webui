@@ -60,7 +60,11 @@
     transition: border-color 0.2s;
 
     &:focus {
-      border-color: #92487A; // Usamos el color morado de tu barra de navegación
+      border-color: #92487A; 
+
+    &:read-only {
+      cursor: default; 
+  }
     }
   }
 }

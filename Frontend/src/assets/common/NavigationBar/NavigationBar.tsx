@@ -1,23 +1,24 @@
 import React, { useState } from 'react';
-import styles from './NavigationBar.module.scss';
 import MenuButton from '../MenuButton/main';
+import { useNavigate } from 'react-router-dom';
 
-// 1. Añadimos una prop para navegar
-interface NavigationBarProps {
-  onNavigate: (page: string) => void;
-}
+import styles from './NavigationBar.module.scss';
 
-// 2. Recibimos la prop en el componente
-const NavigationBar: React.FC<NavigationBarProps> = ({ onNavigate }) => {
+
+const NavigationBar: React.FC = () => {
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleMenuClick = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Función helper para navegar y cerrar el menú
   const handleLinkClick = (page: string) => {
-    onNavigate(page);
+    if (page === 'menu') {
+      navigate('/');
+    } else if (page === 'history') {
+      navigate('/history');
+    }
     setIsMenuOpen(false);
   };
 
@@ -33,12 +34,11 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ onNavigate }) => {
 
       {isMenuOpen && (
         <nav className={styles.DropdownMenu}>
-          {/* 3. Actualizamos los enlaces para usar onNavigate */}
           
-          {/* 'Inicio' nos lleva al Menú de selección de distancia */}
-          <a href="#" onClick={() => handleLinkClick('menu')}>Inicio</a>
+          {/* Esto nos lleva al menú de selección de distancia y al inicio de nueva prueba */}
+          <a href="#" onClick={() => handleLinkClick('menu')}>Nueva Prueba</a>
           
-          {/* 'Historial' nos lleva a la nueva pantalla */}
+          {/* 'Historial' nos lleva al display de la base de datos */}
           <a href="#" onClick={() => handleLinkClick('history')}>Historial</a>
         </nav>
       )}

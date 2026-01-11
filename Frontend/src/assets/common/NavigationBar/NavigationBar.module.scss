@@ -15,7 +15,7 @@
     gap: 16px;
 }
 
-// Clases de estilo para el contenedor del titulo de la pagina, esto incluye el nombre de la empresa/cliente
+// Clases de estilo para el contenedor del titulo de la pagina
 .Title {
     color: #f0f0f0;
     padding: 26px;
@@ -26,16 +26,15 @@
     text-overflow: ellipsis;
 }
 
-// Clases de estilo para el contenedor del boton del menu, es decir el despliegue de este
+// Clases de estilo para el menu desplegable
 .DropdownMenu {
   display: flex;
   flex-direction: column;
   position: absolute;
-  top: 80px; // Justo debajo de la barra de navegación
-  right: 0; // Pegado a la derecha
-  z-index: 999; // Debajo de la barra principal pero encima del resto
+  top: 80px; 
+  right: 0; 
+  z-index: 999;
 
-  // Estilos para los enlaces dentro del menú desplegable
   a {
     padding: 12px 24px;
     text-decoration: none;

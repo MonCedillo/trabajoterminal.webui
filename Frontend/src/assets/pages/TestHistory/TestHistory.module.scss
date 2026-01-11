@@ -7,18 +7,18 @@
   align-items: center;
   padding: 40px;
   box-sizing: border-box;
-  position: relative; // Para posicionar el botón si fuera necesario
+  position: relative;
 }
 
 .tableWrapper {
   background-color: #777777; 
   width: 80%;
   max-width: 1000px;
-  height: 70%; // Altura considerable
+  height: 70%;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   padding: 20px;
-  overflow-y: auto; // Scroll si hay muchos datos
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
@@ -60,21 +60,21 @@
   font-weight: bold;
   color: white;
 
-  &.completada { background-color: #4CAF50; } // Verde
-  &.cancelada { background-color: #f44336; } // Rojo
-  &.fallida { background-color: #FF9800; } // Naranja
+  &.completada { background-color: #4CAF50; } // verde para success
+  &.cancelada { background-color: #f44336; }  // rojo para error
+  &.fallida { background-color: #FF9800; }    // Naranja para un failure, podria cambiarse por azul (?
 }
 
 .buttonContainer {
   width: 80%;
   max-width: 1000px;
   display: flex;
-  justify-content: flex-end; // Alinea el botón a la derecha
+  justify-content: flex-end;
   margin-top: 20px;
 }
 
 .goBackButton {
-  background-color: #FDD835; // Amarillo del mock
+  background-color: #FDD835; // Amarillo por la paleta de color, puede cambiar a azul por tipo de informacion
   color: #000;
   border: none;
   padding: 12px 30px;
@@ -86,7 +86,7 @@
   transition: transform 0.1s;
 
   &:hover {
-    background-color: #FBC02D; // Amarillo un poco más oscuro
+    background-color: #FBC02D; // Oscurece el boton al hoverear indicando accion
   }
 
   &:active {

@@ -1,32 +1,51 @@
 import socketio
 import uvicorn
 from fastapi import FastAPI
+from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
-import asyncio
 
-# Importamos nuestro simulador
-from simulation import run_hardware_simulation
+from database import create_new_test, update_test_status, get_all_tests, cancel_all_active_tests
 
-# 1. Configuración de Socket.IO (Gestor de Tiempo Real)
-# cors_allowed_origins='*' permite que React se conecte sin problemas
+# --- CONFIGURACIÓN DEL SERVIDOR ---
+
+# Creacion de servidor Socket.IO (Async)
+# cors_allowed_origins='*' permite que cualquier IP se conecte
 sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*')
 
-# 2. Configuración de FastAPI (Servidor Web)
+# Creacion de aplicación FastAPI (REST + Socket)
 app = FastAPI()
-
-# Configurar CORS en FastAPI también (Doble seguridad)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# 3. Unir Socket.IO con FastAPI
+@app.on_event("startup")
+async def startup_db_cleanup():
+    print("🧹 Ejecutando protocolo de limpieza de base de datos...")
+    count = await cancel_all_active_tests()
+    if count > 0:
+        print(f"⚠️ Se encontraron {count} pruebas 'Zombies' y fueron marcadas como Interrumpidas.")
+    else:
+        print("✅ Base de datos limpia. No hay pruebas pendientes.")
+
+    # Aseguramos que la memoria RAM empiece vacía
+    global current_test_id, active_test_config
+    current_test_id = None
+    active_test_config = None
+
+
+# Montar Socket.IO sobre FastAPI
 socket_app = socketio.ASGIApp(sio, app)
 
-# --- EVENTOS DEL SOCKET ---
+# --- ESTADO GLOBAL (MEMORIA RAM) ---
+# current_test_id: Guarda el ID de Mongo de la prueba actual
+# active_test_config: Guarda los detalles (distancia, hora) para recuperarlos si se refresca la pagina
+current_test_id = None
+active_test_config = None
+
+# --- EVENTOS DE CONEXIÓN ---
 
 @sio.event
 async def connect(sid, environ):
@@ -36,23 +55,120 @@ async def connect(sid, environ):
 async def disconnect(sid):
     print(f"❌ Cliente desconectado: {sid}")
 
-# Evento para recibir comandos desde la UI (Botones)
+# --- LÓGICA DE CONTROL DE PRUEBAS ---
+
 @sio.event
-async def send_command(sid, command):
-    print(f"📥 Comando recibido desde UI: {command}")
-    # AQUI AGREGAREMOS LA LÓGICA PARA DETENER/INICIAR EL ROBOT REAL
-    # Por ahora solo lo reenviamos a todos para confirmar
-    await sio.emit('command_received', command)
+async def start_test_request(sid, data):
+    """
+    Inicia una nueva prueba.
+    Data esperada: { 'distance': 150, 'cycles': 50000 }
+    """
+    global current_test_id, active_test_config
+    print(f"📩 Solicitud de INICIO recibida: {data}")
 
-# --- INICIO DEL SERVIDOR ---
+    # Si ya hay una prueba corriendo, se hace un cierre forzado antes
+    if current_test_id:
+        print(f"⚠️ Cerrando prueba anterior inconclusa ({current_test_id})...")
+        await update_test_status(current_test_id, {
+            "status": "Cancelled",
+            "end_time": datetime.now().strftime("%H:%M:%S")
+        })
+    
+    # Preparacion de datos para la nueva prueba
+    now_date = datetime.now().strftime("%Y-%m-%d")   
+    now_time = datetime.now().strftime("%H:%M:%S")   
+    
+    new_record = {
+        "distance": float(data.get("distance", 0)),
+        "target_cycles": int(data.get("cycles", 0)),
+        "current_cycle": 0,
+        "status": "Running",
+        "date_created": now_date,
+        "start_time": now_time
+    }
 
-# Este evento se dispara cuando el servidor arranca
-@app.on_event("startup")
-async def startup_event():
-    # Iniciamos la simulación en segundo plano
-    # Cuando tengas la RPi real, aquí iniciarás el loop de lectura real
-    asyncio.create_task(run_hardware_simulation(sio))
+    # Guardar la nueva prueba en la base de datos
+    try:
+        current_test_id = await create_new_test(new_record)
+        print(f"💾 Nueva prueba guardada en DB. ID: {current_test_id}")
+    except Exception as e:
+        print(f"❌ Error guardando en DB: {e}")
+        return # Salimos si falla la base de datos, no se inicia la prueba
 
-if __name__ == '__main__':
-    # Ejecutar uvicorn en el puerto 5000
+    # Actualizacion de la memoria RAM (Para persistencia de estado)
+    active_test_config = {
+        'test_id': current_test_id,
+        'distance': new_record['distance'],
+        'target_cycles': new_record['target_cycles'],
+        'start_time': new_record['start_time'],
+        'date_created': new_record['date_created'],
+        'status': 'Running'
+    }
+
+    # Envio de los datos completos para que la UI los muestre al usuario
+    await sio.emit('test_started_confirmation', active_test_config)
+    
+    # AQUI INICIAREMOS EL ROBOT FÍSICO (Próximamente)
+    # asyncio.create_task(robot_controller.run_sequence(...))
+
+
+@sio.event
+async def stop_test_request(sid, data):
+    """
+    Detiene la prueba actual.
+    """
+    global current_test_id, active_test_config
+    print("🛑 Solicitud de STOP recibida")
+    
+    if current_test_id:
+        # Actualizacion de la base de datos con hora de fin
+        await update_test_status(current_test_id, {
+            "status": "Stopped",
+            "end_time": datetime.now().strftime("%H:%M:%S")
+        })
+        print(f"💾 Prueba {current_test_id} finalizada en DB.")
+    
+    # Limpiar Memoria RAM
+    active_test_config = None
+    current_test_id = None
+    
+    # Confirmar al Frontend el nuevo estado de la prueba
+    await sio.emit('test_stopped_confirmation', {'status': 'Stopped'})
+    
+    # AQUI DETENDREMOS EL ROBOT FÍSICO (Próximamente)
+    # await robot_controller.emergency_stop()
+
+
+@sio.event
+async def check_current_status(sid):
+    """
+    El Frontend pregunta: '¿Hay algo corriendo?' al cargar la página.
+    """
+    global active_test_config
+    print(f"🧐 Cliente {sid} verificando estado...")
+    
+    if active_test_config:
+        # SI: Se envia lo que ya esta guardado en memoria
+        await sio.emit('current_status_response', {
+            'active': True,
+            'data': active_test_config
+        })
+    else:
+        # NO: Le decimos que está libre
+        await sio.emit('current_status_response', {
+            'active': False
+        })
+
+# --- API REST (HISTORIAL) ---
+
+@app.get("/history")
+async def get_history_endpoint():
+    """Ruta para obtener el historial completo en JSON"""
+    return await get_all_tests()
+
+# --- ARRANQUE DEL SERVIDOR ---
+
+if __name__ == "__main__":
+    # host="0.0.0.0" hace visible el servidor en toda tu red local
+    print("🚀 Servidor Robot Backend Iniciando en puerto 5000...")
     uvicorn.run("server:socket_app", host="0.0.0.0", port=5000, reload=True)

@@ -1,34 +1,50 @@
 import React, { useState } from 'react';
 import styles from './ControlPanel.module.scss';
 import ControlButton from '../ControlButton/main';
-// 1. Importar el nuevo Modal
 import ActionModal from '../ActionModal/main';
+import { socketConnection } from '../../../socket_client';
 
-// Definir el tipo aquí o importarlo si lo tienes en un archivo de tipos compartido
 type ButtonVariant = 'stop' | 'pause' | 'play' | 'reset';
 
 const ControlPanel: React.FC = () => {
-  // 2. Estado para saber qué modal está activo (null = ninguno)
   const [activeVariant, setActiveVariant] = useState<ButtonVariant | null>(null);
 
-  // Lógica para comunicarse con la RPi4
   const sendCommand = (command: string) => {
-    // --- API REAL COMENTADA ---
-    // console.log(`[RPi4 Command Sent]: ${command}`);
-    // fetch('/api/rpi/control', { method: 'POST', body: JSON.stringify({ action: command }) })
-    // --------------------------
+    console.log(`[Socket] Enviando comando: ${command}`);
+
+    switch (command) {
+      case 'STOP':
+        // 2. EVENTO ACTUALIZADO (Coincide con server.py)
+        socketConnection.emit('stop_test_request', {});
+        break;
+
+      case 'PAUSE':
+        // Por implementar en server.py
+        console.log("Pausa solicitada (Falta implementar en backend)");
+        // socketConnection.emit('pause_test_request', {});
+        break;
+      
+      case 'RESTART': // Botón Play
+        // Por implementar en server.py
+        console.log("Reanudar solicitado (Falta implementar en backend)");
+        // socketConnection.emit('resume_test_request', {});
+        break;
+
+      case 'RESET':
+        // Generalmente Reset es un Stop forzado + Limpieza
+        socketConnection.emit('stop_test_request', {}); 
+        break;
+        
+      default:
+        console.warn("Comando desconocido:", command);
+    }
   };
 
-  // 3. Nuevo manejador: abre el modal y llama (comentado) a la API
   const handleAction = (variant: ButtonVariant, commandString: string) => {
-    // a) "Enviamos" el comando (ahora comentado dentro de la función)
     sendCommand(commandString);
-
-    // b) Abrimos el modal correspondiente
     setActiveVariant(variant);
   };
 
-  // 4. Función para cerrar el modal
   const closeModal = () => {
     setActiveVariant(null);
   };
@@ -36,7 +52,6 @@ const ControlPanel: React.FC = () => {
   return (
     <>
       <div className={styles.panel}>
-        {/* Actualizamos los onClick para usar handleAction */}
         
         <ControlButton 
           variant="stop" 
@@ -50,7 +65,7 @@ const ControlPanel: React.FC = () => {
 
         <ControlButton 
           variant="play" 
-          onClick={() => handleAction('play', 'START')} 
+          onClick={() => handleAction('play', 'RESTART')} 
         />
         
         <ControlButton 
@@ -59,10 +74,8 @@ const ControlPanel: React.FC = () => {
         />
       </div>
 
-      {/* 5. Renderizamos el Modal */}
-      {/* Se mostrará automáticamente cuando activeVariant tenga un valor */}
       <ActionModal 
-        isOpen={!!activeVariant} // Es true si activeVariant no es null
+        isOpen={!!activeVariant} 
         variant={activeVariant}
         onClose={closeModal}
       />
