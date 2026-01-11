@@ -3,8 +3,8 @@ import { Routes, Route } from 'react-router-dom';
 import './App.css';
 import Menu from './assets/pages/Menu/main';
 import NewTest from './assets/pages/NewTest/main';
+import TestHistory from './assets/pages/TestHistory/main';
 import NavigationBar from './assets/common/NavigationBar/main';
-import TestHistory from './assets/pages/TestHistory/TestHistory';
 
 function App() {
   return (
