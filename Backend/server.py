@@ -1,8 +1,12 @@
-import socketio
+import asyncio
 import uvicorn
+import socketio
+
 from fastapi import FastAPI
 from datetime import datetime
+from robot_hardware import run_physical_cycle
 from fastapi.middleware.cors import CORSMiddleware
+
 
 from database import create_new_test, update_test_status, get_all_tests, cancel_all_active_tests
 
@@ -44,6 +48,7 @@ socket_app = socketio.ASGIApp(sio, app)
 # active_test_config: Guarda los detalles (distancia, hora) para recuperarlos si se refresca la pagina
 current_test_id = None
 active_test_config = None
+robot_task = None
 
 # --- EVENTOS DE CONEXIÓN ---
 
@@ -63,7 +68,7 @@ async def start_test_request(sid, data):
     Inicia una nueva prueba.
     Data esperada: { 'distance': 150, 'cycles': 50000 }
     """
-    global current_test_id, active_test_config
+    global current_test_id, active_test_config, robot_task
     print(f"📩 Solicitud de INICIO recibida: {data}")
 
     # Si ya hay una prueba corriendo, se hace un cierre forzado antes
@@ -108,8 +113,21 @@ async def start_test_request(sid, data):
     # Envio de los datos completos para que la UI los muestre al usuario
     await sio.emit('test_started_confirmation', active_test_config)
     
-    # AQUI INICIAREMOS EL ROBOT FÍSICO (Próximamente)
-    # asyncio.create_task(robot_controller.run_sequence(...))
+    # --- INICIAR EL PROCESO FÍSICO EN SEGUNDO PLANO ---
+    print("🤖 Iniciando proceso físico del robot...")
+    # Cancelar tarea anterior si existiera por error
+    if robot_task and not robot_task.done():
+        robot_task.cancel()
+
+    # Lanzar el proceso en segundo plano sin bloquear el servidor
+    robot_task = asyncio.create_task(
+        run_physical_cycle(
+            test_id=current_test_id, 
+            target_cycles=new_record['target_cycles'], 
+            socket_manager=sio, 
+            update_db_callback=update_test_status
+        )
+    )
 
 
 @sio.event
@@ -120,6 +138,14 @@ async def stop_test_request(sid, data):
     global current_test_id, active_test_config
     print("🛑 Solicitud de STOP recibida")
     
+    # --- DETENER EL PROCESO FÍSICO --- 
+    if robot_task and not robot_task.done():
+        robot_task.cancel()
+        try:
+            await robot_task
+        except asyncio.CancelledError:
+            print("Robot detenido correctamente.")
+
     if current_test_id:
         # Actualizacion de la base de datos con hora de fin
         await update_test_status(current_test_id, {

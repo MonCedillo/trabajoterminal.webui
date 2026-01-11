@@ -16,6 +16,8 @@ const NewTest: React.FC = () => {
 
   // Estado para el contador de ciclos actual
   const [cycleCount, setCycleCount] = useState<number>(0);
+  // Estado para la graficacion de la posicion de los motores
+  const [currentAngle, setCurrentAngle] = useState<number>(0);
 
   // Estado para la informacion general de la prueba
   const [testInfo, setTestInfo] = useState({
@@ -54,10 +56,13 @@ const NewTest: React.FC = () => {
     };
 
     // Escucha de actualizaciones en tiempo real 
-    // TODO: agregar la telemetria completa
+    // TODO: agregar la telemetria completa, manejar el estatus de la prueba
     const handleTelemetry = (data: any) => {
-        if (data.cycleCount !== undefined) setCycleCount(data.cycleCount);
-        if (data.status);
+       // Actualizar Contador
+       if (data.cycleCount !== undefined) setCycleCount(data.cycleCount);
+       
+       // Actualizar Ángulo para la Gráfica (0 o 90)
+       if (data.angle !== undefined) setCurrentAngle(data.angle);
     };
 
     socketConnection.on('current_status_response', handleStatusResponse);
@@ -69,41 +74,10 @@ const NewTest: React.FC = () => {
     };
   }, []);
 
-
-  // Calcula la duración cada segundo, informacion dummy por ahora
-  // TODO: Haacer que funcione con los ciclos del motor en vez del reloj
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (!testInfo.startTime || testInfo.startTime === "--:--") return;
-
-      const now = new Date();
-      // Asume formato HH:MM:SS
-      const [startH, startM, startS] = testInfo.startTime.split(':').map(Number);
-      
-      const startDate = new Date();
-      startDate.setHours(startH, startM, startS);
-
-      // Calcula la diferencia
-      const diffMs = now.getTime() - startDate.getTime();
-      const diffMins = Math.floor(diffMs / 60000); // Minutos
-
-      // Evita negativos si el reloj está desfasado por ms
-      const finalDuration = diffMins > 0 ? diffMins.toString() : "0";
-
-      setTestInfo(prev => ({
-        ...prev,
-        duration: finalDuration
-      }));
-
-    }, 1000); // Actualiza cada segundo
-
-    return () => clearInterval(timer);
-  }, [testInfo.startTime]);
-
   return (
     <div className={styles.newTestContainer}>
       <div className={styles.graphicsArea}>
-        <Graph />
+        <Graph currentData={currentAngle} />
       </div>
 
       <div className={styles.counterArea}>

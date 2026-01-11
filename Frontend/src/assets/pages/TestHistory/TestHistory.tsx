@@ -1,35 +1,38 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-import styles from './TestHistory.module.scss';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import styles from './TestHistory.module.scss';
 
+// Interfaz exacta (Coincide con database.py)
 interface TestRecord {
-  _id: string; // ID de Mongo
-  date_created: string;
+  id: string;
+  date_created: string; 
   start_time: string;
-  distance: number;
-  target_cycles: number;
-  current_cycle: number;
-  status: string;
   end_time?: string;
+  distance: number;
+  current_cycle: number;
+  target_cycles: number;
+  status: string;
 }
 
 const TestHistory: React.FC = () => {
   const navigate = useNavigate();
   const [historyData, setHistoryData] = useState<TestRecord[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        // Peticion para tener los datos del back /  de la base de datos de mongo 
         const response = await fetch('http://localhost:5000/history');
         const data = await response.json();
-        const sortedData = await response.json();
+        
+        // --- AQUÍ ESTÁ EL CAMBIO MÁGICO ---
+        // Invertimos el array para que los más recientes queden primero
+        const sortedData = data.reverse(); 
         setHistoryData(sortedData);
+        // ----------------------------------
 
       } catch (error) {
-        console.error("Error cargando historial:", error);
+        console.error("❌ Error cargando historial:", error);
       } finally {
         setLoading(false);
       }
@@ -38,31 +41,17 @@ const TestHistory: React.FC = () => {
     fetchHistory();
   }, []);
 
-const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Completed': return '#4caf50'; // Verde
-      case 'Running': return '#2196f3';   // Azul
-      case 'Stopped': return '#f44336';   // Rojo de parada
-      case 'Cancelled': return '#ff9800'; // Naranja de advertencia
-      case 'Interrupted': return '#9e9e9e'; // Gris, mas bien se refiere a que no es valida 
-      default: return '#fff';
-    }
-  };
-
   return (
     <div className={styles.historyContainer}>
       <header className={styles.header}>
-        <h1>Historial de Pruebas</h1>
-        <button className={styles.backButton} onClick={() => navigate('/')}>
-          Volver al Menú
-        </button>
+        <h1 className={styles.title}>Historial de Pruebas</h1>
       </header>
 
       <div className={styles.tableWrapper}>
         {loading ? (
-          <p className={styles.loadingText}>Cargando datos...</p>
-        ) : historyData.length === 0 ? (
-          <p className={styles.emptyText}>No hay pruebas registradas aún.</p>
+          <div className={styles.loadingContainer}>
+            <p>Cargando datos...</p>
+          </div>
         ) : (
           <table className={styles.historyTable}>
             <thead>
@@ -70,35 +59,45 @@ const getStatusColor = (status: string) => {
                 <th>Fecha</th>
                 <th>Hora Inicio</th>
                 <th>Distancia</th>
-                <th>Ciclos Realizados</th>
+                <th>Progreso (Ciclos)</th>
                 <th>Estado</th>
                 <th>Hora Fin</th>
               </tr>
             </thead>
             <tbody>
-              {historyData.map((test) => (
-                <tr key={test._id}>
-                  <td>{test.date_created}</td>
-                  <td>{test.start_time}</td>
-                  {/* Conversion a centimetros desde metros */}
-                  <td>{(test.distance / 100).toFixed(2)} m</td> 
-                  <td>
-                    {test.current_cycle} / {test.target_cycles}
+              {historyData.length > 0 ? (
+                historyData.map((row) => (
+                  <tr key={row.id}>
+                    <td>{row.date_created}</td>
+                    <td>{row.start_time}</td>
+                    {/* Visualizamos en metros */}
+                    <td>{(row.distance / 1000).toFixed(2)} m</td>
+                    <td style={{ fontWeight: 'bold' }}>
+                        {row.current_cycle.toLocaleString()} / {row.target_cycles.toLocaleString()}
+                    </td>
+                    <td>
+                      <span className={`${styles.statusBadge} ${styles[row.status.toLowerCase()]}`}>
+                        {row.status}
+                      </span>
+                    </td>
+                    <td>{row.end_time || '--:--'}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className={styles.emptyCell}>
+                    No hay registros en la base de datos.
                   </td>
-                  <td>
-                    <span 
-                      className={styles.statusBadge}
-                      style={{ backgroundColor: getStatusColor(test.status) }}
-                    >
-                      {test.status}
-                    </span>
-                  </td>
-                  <td>{test.end_time || '--:--'}</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         )}
+      </div>
+      <div className={styles.buttonContainer}>
+        <button className={styles.goBackButton} onClick={() => navigate('/')}>
+          Volver al Menú
+        </button>
       </div>
     </div>
   );
