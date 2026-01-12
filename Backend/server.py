@@ -13,7 +13,7 @@ from database import create_new_test, update_test_status, get_all_tests, cancel_
 # --- CONFIGURACIÓN DEL SERVIDOR ---
 
 # Creacion de servidor Socket.IO (Async)
-# cors_allowed_origins='*' permite que cualquier IP se conecte
+cors_allowed_origins='*' # permite que cualquier IP se conecte
 sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*')
 
 # Creacion de aplicación FastAPI (REST + Socket)
