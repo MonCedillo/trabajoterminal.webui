@@ -6,12 +6,9 @@ from gpiozero.pins.lgpio import LGPIOFactory
 factory = LGPIOFactory()
 
 # --- CONFIGURACIÓN DE PINES ---
-# Usamos GPIO 17 y 18 para los dos motores
-PIN_SERVO_1 = 18    # Se utiliza GPIO18 (Pin físico 12) para el brazo derecho
-PIN_SERVO_2 = 17    # Se utiliza GPIO17 (Pin físico 11) para el brazo izquierdo
+PIN_SERVO_1 = 18
+PIN_SERVO_2 = 17
 
-# Configuración física de los MG996R
-# El rango físico del motor va de 0-180 grados para la calibración de pulsos
 servo_config = {
     "min_angle": 0,
     "max_angle": 180,
@@ -20,84 +17,80 @@ servo_config = {
     "pin_factory": factory
 }
 
-# Inicializacion de los servomotores
 servo1 = AngularServo(PIN_SERVO_1, **servo_config)
 servo2 = AngularServo(PIN_SERVO_2, **servo_config)
 
-async def run_physical_cycle(test_id, target_cycles, socket_manager, update_db_callback):
+# AÑADIMOS EL PARAMETRO pause_event
+async def run_physical_cycle(test_id, target_cycles, socket_manager, update_db_callback, pause_event):
     """
-    Ciclo operativo: 0° -> 90° -> 0°
-    Ciclos objetivo: 50,000 ciclos.
+    Ciclo operativo con capacidad de PAUSA.
     """
-    print(f"🤖 ROBOT: Iniciando prueba {test_id} (0°-90°) para grifo duomando")
+    print(f"🤖 ROBOT: Iniciando prueba {test_id} (0°-90°)")
     
     current_cycle = 0
     
     try:
-        # 1. Posición Inicial (CASA - 0 Grados)
+        # 1. Posición Inicial (CASA)
         servo1.angle = 0
         servo2.angle = 0
-        
-        # Se envia el dato inicial para la graficación, en este caso 0 grados
         await socket_manager.emit('telemetry_data', {'angle': 0, 'test_id': test_id})
-        await asyncio.sleep(1) # Tiempo para alinearse al inicio antes de comenzar
+        await asyncio.sleep(1)
 
         while current_cycle < target_cycles:
-            # --- MOVIMIENTO 1: MOVER A 90 GRADOS ---
+            # --- PUNTO DE CONTROL DE PAUSA ---
+            # Si pause_event está clear(), el código se detiene aquí hasta que sea set()
+            if not pause_event.is_set():
+                print("⏸️ ROBOT: Pausado, esperando reanudación...")
+                await socket_manager.emit('status_update', {'status': 'Paused'})
+                await pause_event.wait() # AQUI SE QUEDA CONGELADO HASTA EL RESUME
+                print("▶️ ROBOT: Reanudando...")
+                await socket_manager.emit('status_update', {'status': 'Running'})
+
+            # --- MOVIMIENTO 1: 90 GRADOS ---
             servo1.angle = 90
             servo2.angle = 90
-            
-            # Envia dato para graficar el movimiento a 90 grados de acuerdo con la programacion del ciclo
             await socket_manager.emit('telemetry_data', {'angle': 90})
-            
-            # Se espera a que el motor llegue físicamente y se da un margen de seguridad en forma de un retardo
             await asyncio.sleep(1) 
             
-            # --- MOVIMIENTO 2: VOLVER A 0 GRADOS ---
+            # --- MOVIMIENTO 2: 0 GRADOS ---
             servo1.angle = 0
             servo2.angle = 0
-            
-            # Envia dato para graficar el movimiento de regreso a 0 grados de acuerdo con la programacion del ciclo
             await socket_manager.emit('telemetry_data', {'angle': 0})
-            
             await asyncio.sleep(1)
             
-            # --- FINAL: FIN DE CICLO, INCREMENTAR CURRENT CYCLE ---
+            # --- FINAL DE CICLO ---
             current_cycle += 1
             
-            # Enviamos el contador actualizado (+1 ciclo)
             await socket_manager.emit('telemetry_data', {
                 'cycleCount': current_cycle,
                 'status': 'Running',
                 'test_id': test_id
             })
 
-            # Guardado periódico en DB (cada 50 ciclos para optimizar)
             if current_cycle % 50 == 0:
                 await update_db_callback(test_id, {"current_cycle": current_cycle})
         
-        print("✅ ROBOT: 50,000 Ciclos completados.")
+        print("✅ ROBOT: Ciclos completados.")
         
     except asyncio.CancelledError:
-        print("🛑 ROBOT: Detenido manualmente.")
-        servo1.detach()
-        servo2.detach()
-        raise
+        print("🛑 ROBOT: Detenido/Reiniciado manualmente.")
+        # No ponemos raise aquí para permitir que el finally limpie todo tranquilamente
         
     except Exception as e:
         print(f"❌ ERROR HARDWARE: {e}")
     
     finally:
-        # Apagar motores y guardar estado final
+        # Asegurar que vuelve a 0 y se apaga
         servo1.angle = 0
         servo2.angle = 0
         await asyncio.sleep(0.5)
         servo1.detach()
         servo2.detach()
         
-        status = 'Completed' if current_cycle >= target_cycles else 'Stopped'
-        await update_db_callback(test_id, {
-            "current_cycle": current_cycle,
-            "status": status
-        })
-        await socket_manager.emit('status_update', {'status': status})
+        # Solo actualizamos a 'Completed' si realmente acabó, si fue cancelado se maneja fuera
+        if current_cycle >= target_cycles:
+            await update_db_callback(test_id, {
+                "current_cycle": current_cycle,
+                "status": "Completed"
+            })
+            await socket_manager.emit('status_update', {'status': 'Completed'})
