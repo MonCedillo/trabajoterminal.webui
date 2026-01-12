@@ -22,7 +22,7 @@ const TestHistory: React.FC = () => {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const response = await fetch('http://10.93.173.225:8000/history');
+        const response = await fetch('http://10.93.173.225:5000/history');
         const data = await response.json();
         
         // --- AQUÍ ESTÁ EL CAMBIO MÁGICO ---

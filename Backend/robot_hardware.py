@@ -50,9 +50,8 @@ async def run_physical_cycle(test_id, target_cycles, socket_manager, update_db_c
             # Envia dato para graficar el movimiento a 90 grados de acuerdo con la programacion del ciclo
             await socket_manager.emit('telemetry_data', {'angle': 90})
             
-            # Se espera a que el motor llegue físicamente (0.3s aprox para 90° en MG996R)
-            # Se un margen de seguridad en forma de un delay o retardo
-            await asyncio.sleep(0.4) 
+            # Se espera a que el motor llegue físicamente y se da un margen de seguridad en forma de un retardo
+            await asyncio.sleep(1) 
             
             # --- MOVIMIENTO 2: VOLVER A 0 GRADOS ---
             servo1.angle = 0
@@ -61,7 +60,7 @@ async def run_physical_cycle(test_id, target_cycles, socket_manager, update_db_c
             # Envia dato para graficar el movimiento de regreso a 0 grados de acuerdo con la programacion del ciclo
             await socket_manager.emit('telemetry_data', {'angle': 0})
             
-            await asyncio.sleep(0.4)
+            await asyncio.sleep(1)
             
             # --- FINAL: FIN DE CICLO, INCREMENTAR CURRENT CYCLE ---
             current_cycle += 1
